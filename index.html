@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Te informa civis | Canon Minero y Regalías Mineras</title>
+<link rel="stylesheet" href="styles.css"></head><body>
+<header><h1>Te informa civis</h1><p>Canon Minero y Regalías Mineras, 2004–2025: transferencias a gobiernos regionales y locales por departamento, provincia y distrito.</p></header>
+<div class="bar">
+<label>Categoría<div class="seg" id="cat"><button data-c="0" class="on">Canon Minero</button><button data-c="1">Regalías Mineras</button></div></label>
+<label>Año<select id="sy"></select></label>
+<label>Región<select id="sd"></select></label>
+<label>Provincia<select id="sp"></select></label>
+<label>Distrito<select id="ss"></select></label>
+</div>
+<main>
+<section class="pn"><h2 id="t1"></h2><div class="sum" id="sum"></div><div style="height:46px"></div>
+<div class="ch"><div class="yax" id="yax"></div><div class="sc"><div class="in" id="in"></div></div></div>
+<div class="key"><span><b style="background:var(--R)"></b>Gobierno Regional</span><span><b style="background:var(--L)"></b>Gobiernos Locales</span></div>
+<div class="tot"><strong id="big"></strong><span id="cn"></span><small>Fuente: Transparencia Económica del Ministerio de Economía y Finanzas (MEF)</small></div></section>
+<section class="pn map">
+<div class="tb"><button id="zi" title="Acercar">+</button><button id="zo" title="Alejar">−</button><button id="zh" title="Vista inicial">⌂</button><button id="bl" title="Capas">▦</button><button id="bg" class="on" title="Leyenda">☰</button></div>
+<div class="box lay" id="lay" hidden><header>Capas</header><div class="bd"><label class="sw"><input type="checkbox" id="l1" checked>Color por monto</label><label class="sw"><input type="checkbox" id="l2" checked>Nombres y montos</label></div></div>
+<div class="box" id="leg"><header>Leyenda<button id="lx" title="Cerrar">✕</button></header><div class="bd" id="lb"></div></div>
+<svg id="m" viewBox="0 0 430 555"></svg></section>
+<section class="pn full"><h2 id="t2"></h2><div class="ch"><div class="yax" id="yax2"></div><div class="sc"><div class="in" id="in2"></div></div></div></section>
+</main>
+<footer id="ft"></footer><div id="tip"></div>
+<script src="data.js"></script>
+<script src="app.js"></script></body></html>
