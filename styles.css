@@ -1,28 +1,42 @@
 :root{--R:#3b82f6;--L:#f97316;--mu:#a1a1aa;--g:#2fb463;--bd:#232323}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#000;color:#fff;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#000;color:#fff;-webkit-text-size-adjust:100%}
 
-/* ---------- Portada ---------- */
-.hero{background:#f4f7fb;color:#0f2238;text-align:center;padding:clamp(36px,7vw,72px) 20px clamp(36px,6vw,64px)}
-.kick{margin:0 0 18px;font-size:13px;font-weight:700;letter-spacing:.08em;color:#0e7c86}
-.hero h1{margin:0;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.15;color:#0f2238}
-.sub{margin:14px auto 0;max-width:560px;color:#64748b;font-size:clamp(.95rem,2.4vw,1.05rem)}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;max-width:960px;margin:clamp(28px,5vw,48px) auto 0;text-align:left}
-.card{background:#fff;border:1px solid #dbe7ee;border-radius:22px;padding:clamp(18px,3vw,28px);box-shadow:0 6px 24px rgba(15,34,56,.05)}
-.num{display:inline-block;background:#0e7c86;color:#fff;font-weight:700;padding:9px 14px;border-radius:12px;font-size:15px}
-.q{margin:22px 0 2px;color:#334155;font-size:1.05rem}
-.card h2{margin:0;font-size:clamp(1.25rem,3vw,1.5rem);color:#0f2238}
-.card hr{border:0;border-top:1px solid #dbe7ee;margin:16px 0}
-.card p:not(.q){margin:0;color:#475569;line-height:1.55;font-size:.97rem}
-.dist{margin-top:18px}.dist small{display:block;color:#64748b;margin-bottom:6px;font-size:12px}
-.db{display:flex;border-radius:8px;overflow:hidden;height:26px}
-.db i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;font-weight:700;color:#fff}
-.lg{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 22px;margin:22px 0 0;font-size:13px;color:#475569}
+/* ---------- Portada (blanca) ---------- */
+.hero{background:#fff;color:#0f2238;text-align:center;padding:clamp(40px,8vw,84px) 20px clamp(44px,7vw,76px)}
+.kick{margin:0 0 20px;font-size:clamp(13px,2vw,15px);font-weight:700;letter-spacing:.14em;color:#0e7c86}
+.hero h1{margin:0;font-size:clamp(2rem,6vw,3.4rem);line-height:1.1;font-weight:800;letter-spacing:-.02em;color:#0f2238}
+.sub{margin:18px auto 0;max-width:620px;color:#5b6b7e;font-size:clamp(1rem,2.6vw,1.2rem);line-height:1.55}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:1000px;margin:clamp(32px,6vw,56px) auto 0;text-align:left}
+.card{background:#fff;border:1px solid #dbe7ee;border-radius:24px;padding:clamp(22px,3.4vw,34px);box-shadow:0 10px 30px rgba(15,34,56,.06)}
+.num{display:inline-block;background:#0e7c86;color:#fff;font-weight:700;padding:10px 16px;border-radius:12px;font-size:16px}
+.q{margin:26px 0 4px;color:#334155;font-size:clamp(1.05rem,2.4vw,1.2rem)}
+.card h2{margin:0;font-size:clamp(1.5rem,3.6vw,1.9rem);line-height:1.2;font-weight:800;color:#0f2238}
+.card hr{border:0;border-top:1px solid #dbe7ee;margin:20px 0}
+.card p:not(.q){margin:0;color:#475569;line-height:1.7;font-size:clamp(1rem,2.2vw,1.1rem)}
+.dist{margin-top:22px}.dist small{display:block;color:#64748b;margin-bottom:8px;font-size:13px;font-weight:600}
+.db{display:flex;border-radius:10px;overflow:hidden;height:30px}
+.db i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:13px;font-weight:700;color:#fff}
+.lg{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 24px;margin:26px 0 0;font-size:14px;font-weight:500;color:#475569}
 .lg span,.key span{display:inline-flex;align-items:center;gap:8px}
 .lg b,.key b{width:14px;height:14px;border-radius:3px;display:inline-block}
-.go{display:inline-block;margin-top:26px;padding:12px 26px;background:#0e7c86;color:#fff;text-decoration:none;font-weight:700;border-radius:999px}
-.go:hover{background:#0b6670}
+.go{display:inline-block;margin-top:30px;padding:14px 30px;background:#0e7c86;color:#fff;text-decoration:none;font-weight:700;font-size:1rem;border-radius:999px;transition:background .2s,transform .2s}
+.go:hover{background:#0b6670;transform:translateY(-2px)}
+
+/* ---------- Cadena infinita ---------- */
+.chain{background:#000;border-top:3px solid var(--g);border-bottom:1px solid #1c1c1c;padding:18px 0;overflow:hidden;display:grid;gap:12px;
+ -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.chain .row{overflow:hidden}
+.chain .track{display:flex;width:max-content;animation:run 40s linear infinite}
+.chain .row.b .track{animation-direction:reverse;animation-duration:50s}
+.chain .row:hover .track{animation-play-state:paused}
+.chain span{display:inline-flex;align-items:center;gap:10px;margin:0 8px;padding:9px 20px;border:1px solid #2a2a2a;border-radius:999px;background:#0b0b0b;color:#fff;font-weight:600;font-size:clamp(.9rem,2.2vw,1.05rem);white-space:nowrap}
+.chain .row.a span{border-color:#1f6f43}
+.chain .row.b span{border-color:#9a4a12}
+.chain em{font-style:normal;font-size:1.2em}
+@keyframes run{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.chain .track{animation:none}}
 
 /* ---------- Visor (negro) ---------- */
 .dash{background:#000;padding-bottom:28px}
