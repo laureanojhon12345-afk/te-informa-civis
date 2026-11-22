@@ -31,10 +31,10 @@ function render(){
   const k=S.d<0?r[1]:S.p<0?r[2]:r[3];if(!g.has(k))g.set(k,{r:0,l:0});const o=g.get(k);
   if(r[4])o.l+=val(r);else o.r+=val(r);if(r[4])tl+=val(r);else tr+=val(r)});
  const lab=k=>S.d<0?D.d[k]:S.p<0?(k<0?'Gobierno Regional':D.p[k]):(k<0?'Municipalidad provincial':D.s[k]);
- let it=[...g].map(([k,o])=>({key:k,k:lab(k),r:o.r,l:o.l})).sort((a,b)=>b.r+b.l-a.r-a.l);const all=it.length;it=it.slice(0,30);
+ let it=[...g].map(([k,o])=>({key:k,k:lab(k),r:o.r,l:o.l})).sort((a,b)=>b.r+b.l-a.r-a.l);const all=it.length,all_=it;it=it.slice(0,30);
  const lvl=S.d<0?'departamento':S.p<0?'provincia':'distrito';
  $('t1').textContent=`${nm} por ${lvl}, ${S.y||'2004–2025'}`+(all>30?` (30 mayores de ${all})`:'');
- chart($('in'),$('yax'),it,x=>{if(S.d<0)S.d=x.key;else if(S.p<0&&x.key>=0)S.p=x.key;else if(S.s<0&&x.key>=0&&S.p>=0)S.s=x.key;render()},true);
+ curAll=all_;chart($('in'),$('yax'),it,drill,true);
  const place=S.s>=0?D.s[S.s]:S.p>=0?D.p[S.p]:S.d>=0?D.d[S.d]:'Todas las regiones';
  $('sum').innerHTML=`<div>${place}</div><div><span>Gobierno Regional</span><span>${Math.round(tr).toLocaleString('es-PE')}</span></div><div><span>Gobiernos Locales</span><span>${Math.round(tl).toLocaleString('es-PE')}</span></div><div><span>Total</span><span>${Math.round(tr+tl).toLocaleString('es-PE')}</span></div>`;
  $('big').textContent=fm(tr+tl);$('cn').textContent=nm;
@@ -44,20 +44,25 @@ function render(){
  $('t2').textContent=`Evolución anual de ${nm} en ${place}. Selecciona un año para filtrar.`;
  chart($('in2'),$('yax2'),yi,x=>{S.y=S.y==x.key?0:x.key;render()},false);
  $('ft').textContent=S.c?'Regalías Mineras: datos MEF (monto acreditado) 2005–2013; 2014–2025 son valores estimados, aún sin datos oficiales cargados. Gobierno Regional / Locales 2004–2013: el MEF no separa el nivel de gobierno en esta descarga, por lo que se calcula con la parte que fija la ley (20 % regional en regalías).':'Canon Minero: monto acreditado según el MEF, 2004–2025. En 2005–2013 el reparto Gobierno Regional / Locales usa la parte que fija la ley (25 % regional).';
- drawMap()}
+ drawMap();if(S.d!==lastD){lastD=S.d;fit()}}
+let curAll=[],lastD=-1;
+function drill(x){if(x.key==null)return;if(S.d<0)S.d=x.key;else if(S.p<0&&x.key>=0)S.p=x.key;else if(S.s<0&&x.key>=0&&S.p>=0)S.s=x.key;render()}
 
-const RAMP=['#b7d4f6','#6da8ec','#3585e2','#1d5cab','#1a3f6b','#17283c'],SELF='#3585e2';
+const RAMP=['#1b5e3a','#1f8a4c','#2fb463','#55d68a','#9be8b5','#d9f7e4'],SELF='#2fb463';
 function ramp(t){const n=RAMP.length-1,s=Math.min(.999,t)*n,i=Math.floor(s),f=s-i,x=c=>[1,3,5].map(k=>parseInt(c.substr(k,2),16));const A=x(RAMP[i]),B=x(RAMP[i+1]);return'rgb('+A.map((v,k)=>Math.round(v+(B[k]-v)*f)).join(',')+')'}
 const V={k:1,x:0,y:0},svg=$('m');
-svg.innerHTML=`<rect width="430" height="555" fill="#1a1a18"/><g id="vp"><g id="bb"></g></g>`;
+svg.innerHTML=`<rect width="430" height="555" fill="#000"/><g id="vp"><g id="bb"></g></g>`;
 const vp=$('vp');function tf(){vp.setAttribute('transform',`translate(${V.x} ${V.y}) scale(${V.k})`)}
-function zoom(f,cx,cy){const k=Math.min(8,Math.max(1,V.k*f)),r=k/V.k;V.x=cx-(cx-V.x)*r;V.y=cy-(cy-V.y)*r;V.k=k;if(k==1){V.x=V.y=0}tf()}
+let raf;function go(k,x,y){cancelAnimationFrame(raf);const a={k:V.k,x:V.x,y:V.y},t0=performance.now();const st=t=>{const u=Math.min(1,(t-t0)/450),e=1-Math.pow(1-u,3);V.k=a.k+(k-a.k)*e;V.x=a.x+(x-a.x)*e;V.y=a.y+(y-a.y)*e;tf();if(u<1)raf=requestAnimationFrame(st)};raf=requestAnimationFrame(st)}
+const BB={};function bbox(nm,o){if(BB[nm])return BB[nm];let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;o.p.split(' ').forEach(q=>{const [x,y]=q.split(',').map(Number);if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y});return BB[nm]=[x0,y0,x1,y1]}
+function fit(){if(S.d<0){go(1,0,0);return}const nm=D.d[S.d];let b;if(nm=='Callao'){const [x,y]=G.call;b=[x-8,y-8,x+8,y+8]}else{const o=G.d[nm];if(!o)return;b=bbox(nm,o)}const w=Math.max(b[2]-b[0],1),h=Math.max(b[3]-b[1],1),k=Math.min(8,Math.max(1,Math.min(430*.78/w,555*.78/h))),cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2;go(k,215-cx*k,277-cy*k)}
+function zoom(f,cx,cy){cancelAnimationFrame(raf);const k=Math.min(8,Math.max(1,V.k*f)),r=k/V.k;V.x=cx-(cx-V.x)*r;V.y=cy-(cy-V.y)*r;V.k=k;if(k==1){V.x=V.y=0}tf()}
 const pt=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())};
 svg.addEventListener('wheel',e=>{e.preventDefault();const p=pt(e);zoom(e.deltaY<0?1.2:1/1.2,p.x,p.y)},{passive:false});
-let dr=null;svg.onpointerdown=e=>{dr={p:pt(e),x:V.x,y:V.y,m:0}};
+let dr=null;svg.onpointerdown=e=>{cancelAnimationFrame(raf);dr={p:pt(e),x:V.x,y:V.y,m:0}};
 addEventListener('pointermove',e=>{if(!dr)return;const p=pt(e);if(Math.abs(p.x-dr.p.x)+Math.abs(p.y-dr.p.y)>4)dr.m=1;if(dr.m){V.x=dr.x+p.x-dr.p.x;V.y=dr.y+p.y-dr.p.y;tf()}});
 addEventListener('pointerup',()=>setTimeout(()=>dr=null));
-$('zi').onclick=()=>zoom(1.5,215,277);$('zo').onclick=()=>zoom(1/1.5,215,277);$('zh').onclick=()=>{V.k=1;V.x=V.y=0;tf()};
+$('zi').onclick=()=>go(Math.min(8,V.k*1.5),215-(215-V.x)/V.k*Math.min(8,V.k*1.5),277-(277-V.y)/V.k*Math.min(8,V.k*1.5));$('zo').onclick=()=>{const k=Math.max(1,V.k/1.5);k==1?go(1,0,0):go(k,215-(215-V.x)/V.k*k,277-(277-V.y)/V.k*k)};$('zh').onclick=()=>{S.d=S.p=S.s=-1;render();go(1,0,0)};
 $('bl').onclick=()=>{$('lay').hidden=!$('lay').hidden;$('bl').classList.toggle('on',!$('lay').hidden)};
 $('bg').onclick=()=>{$('leg').hidden=!$('leg').hidden;$('bg').classList.toggle('on',!$('leg').hidden)};
 $('lx').onclick=()=>$('bg').click();$('l1').onchange=$('l2').onchange=()=>drawMap();
@@ -75,16 +80,20 @@ function drawMap(){
   if(sel)s=el;else b+=el;
   if($('l2').checked){const [x,y]=o.c,fs=o.a>9000?11:o.a>3000?9:o.a>1500?7.5:6.5;
    lb+=`<g transform="rotate(-30 ${x} ${y})" pointer-events="none" text-anchor="middle" font-size="${fs}" fill="#fff" stroke="#0b0b0b" stroke-width="2.4" paint-order="stroke"><text x="${x}" y="${y}" font-weight="600">${nm}</text>${o.a>1800?`<text x="${x}" y="${y+fs+.5}" font-size="${fs-1.5}" fill="#bfe0ff">${sh(v)}</text>`:''}</g>`}});
- $('bb').innerHTML=b+s+lb;
+ svg.classList.toggle('has',S.d>=0);$('bb').innerHTML=b+s+lb;
  $('bb').querySelectorAll('.hx').forEach(c=>{const i=+c.dataset.i,q=tot.find(z=>z[0]==i);
   c.onclick=()=>pick(i);c.onkeydown=e=>{if(e.key=='Enter'||e.key==' '){e.preventDefault();pick(i)}};
   c.onmousemove=e=>tipOn(e,`<b>${q[1]}</b><br>${fm(q[2])}`);c.onmouseleave=tipOff})}
 function drawLeg(){const mx=Math.max(...tot.map(t=>t[2]),1);
- $('lb').innerHTML=`<h4>${S.c?'Regalías Mineras':'Canon Minero'} ${S.y||'2004–2025'}</h4><div style="height:10px;border-radius:5px;border:1px solid #000;background:linear-gradient(90deg,${RAMP.join(',')})"></div><div class="rk" style="cursor:default;border:0"><span>S/ 0</span><span>${sh(mx)}</span></div><label class="sw"><b style="width:14px;height:14px;border-radius:3px;background:transparent;border:2px solid #fbbf24;opacity:1"></b>Región seleccionada</label><p style="margin:4px 0;color:var(--mu)">Cada color es un departamento: más claro = menos monto, más oscuro = más monto. Haz clic para filtrar y de nuevo para quitar el filtro.</p><h4>Ranking por región</h4>`+tot.map(([i,n,v])=>`<div class="rk" data-i="${i}"><span>${n}</span><b>${sh(v)}</b></div>`).join('');
- $('lb').querySelectorAll('.rk[data-i]').forEach(r=>r.onclick=()=>pick(+r.dataset.i))}
+ const lvl=S.d<0?'región':S.p<0?'provincia':'distrito';
+ const rows=S.d<0?tot.map(([i,n,v])=>`<div class="rk" data-i="${i}"><span>${n}</span><b>${sh(v)}</b></div>`):curAll.map(o=>`<div class="rk${o.key<0?' nc':''}" data-k="${o.key}"><span>${o.k}</span><b>${sh(o.r+o.l)}</b></div>`);
+ $('lb').innerHTML=`<h4>${S.c?'Regalías Mineras':'Canon Minero'} ${S.y||'2004–2025'}</h4><div style="height:10px;border-radius:5px;border:1px solid #000;background:linear-gradient(90deg,${RAMP.join(',')})"></div><div class="rk" style="cursor:default;border:0"><span>S/ 0</span><span>${sh(mx)}</span></div><label class="sw"><b style="width:14px;height:14px;border-radius:3px;background:transparent;border:2px solid #bbf7d0;opacity:1"></b>Región seleccionada</label><p style="margin:4px 0;color:var(--mu)">Más oscuro = menos monto, más brillante = más monto. Haz clic en una región para acercar el mapa y de nuevo para quitar el filtro.</p><h4>Ranking por ${lvl}</h4>`+rows.join('');
+ $('lb').querySelectorAll('.rk[data-i]').forEach(r=>r.onclick=()=>pick(+r.dataset.i));
+ $('lb').querySelectorAll('.rk[data-k]:not(.nc)').forEach(r=>r.onclick=()=>drill({key:+r.dataset.k}))}
 $('sy').onchange=e=>{S.y=+e.target.value<0?0:+e.target.value;render()};
 $('sd').onchange=e=>{S.d=+e.target.value;S.p=S.s=-1;render()};
 $('sp').onchange=e=>{S.p=+e.target.value;S.s=-1;render()};
 $('ss').onchange=e=>{S.s=+e.target.value;render()};
 document.querySelectorAll('#cat button').forEach(b=>b.onclick=()=>{S.c=+b.dataset.c;render()});
 render();
+if(innerWidth<760){$('leg').hidden=true;$('bg').classList.remove('on')}
